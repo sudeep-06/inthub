@@ -1,0 +1,197 @@
+{
+  "identity": {
+    "persona": "E1",
+    "mission": "Create a unique, professional, and student-centric internship platform that blends 'The Performance Pro' efficiency with 'Organic' growth vibes.",
+    "principles": [
+      "Fusion over Imitation: Mix LinkedIn professionalism with Dribbble creativity.",
+      "Emotion First: Empower students, reduce anxiety.",
+      "Content is King: Listings and stats must pop.",
+      "Zoom In: Focus on match scores and skills.",
+      "Negative Space: Use whitespace to reduce cognitive load."
+    ]
+  },
+  "theme": {
+    "mode": "light",
+    "primary_color": "#2563eb",
+    "secondary_color": "#f1f5f9",
+    "accent_color": "#3b82f6",
+    "radius": "0.5rem"
+  },
+  "typography": {
+    "font_family_heading": "Manrope, sans-serif",
+    "font_family_body": "Inter, sans-serif",
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+      "h2": "text-3xl font-semibold tracking-tight",
+      "h3": "text-2xl font-semibold",
+      "p": "text-base text-slate-600 leading-relaxed",
+      "small": "text-sm text-slate-500"
+    },
+    "imports": [
+      "@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap');"
+    ]
+  },
+  "colors": {
+    "light": {
+      "background": "#ffffff",
+      "foreground": "#0f172a",
+      "card": "#ffffff",
+      "card_foreground": "#0f172a",
+      "popover": "#ffffff",
+      "popover_foreground": "#0f172a",
+      "primary": "#2563eb",
+      "primary_foreground": "#ffffff",
+      "secondary": "#f1f5f9",
+      "secondary_foreground": "#0f172a",
+      "muted": "#f8fafc",
+      "muted_foreground": "#64748b",
+      "accent": "#eff6ff",
+      "accent_foreground": "#2563eb",
+      "destructive": "#ef4444",
+      "destructive_foreground": "#ffffff",
+      "border": "#e2e8f0",
+      "input": "#e2e8f0",
+      "ring": "#2563eb",
+      "chart_1": "#2563eb",
+      "chart_2": "#3b82f6",
+      "chart_3": "#60a5fa",
+      "chart_4": "#93c5fd",
+      "chart_5": "#bfdbfe"
+    },
+    "dark": {
+      "background": "#020817",
+      "foreground": "#f8fafc",
+      "card": "#020617",
+      "card_foreground": "#f8fafc",
+      "popover": "#020617",
+      "popover_foreground": "#f8fafc",
+      "primary": "#3b82f6",
+      "primary_foreground": "#ffffff",
+      "secondary": "#1e293b",
+      "secondary_foreground": "#f8fafc",
+      "muted": "#1e293b",
+      "muted_foreground": "#94a3b8",
+      "accent": "#1e293b",
+      "accent_foreground": "#f8fafc",
+      "destructive": "#7f1d1d",
+      "destructive_foreground": "#f8fafc",
+      "border": "#1e293b",
+      "input": "#1e293b",
+      "ring": "#3b82f6",
+      "chart_1": "#3b82f6",
+      "chart_2": "#60a5fa",
+      "chart_3": "#93c5fd",
+      "chart_4": "#bfdbfe",
+      "chart_5": "#dbeafe"
+    }
+  },
+  "layout": {
+    "structure": "Sidebar Navigation (Left) + Topbar (Mobile) + Main Content Area",
+    "grid_system": "Bento Grid Mode B (High Density for Dashboard)",
+    "container_width": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+    "spacing": {
+      "section_padding": "py-12 md:py-24",
+      "component_gap": "gap-6",
+      "card_padding": "p-6"
+    }
+  },
+  "components": {
+    "buttons": {
+      "style": "rounded-full font-medium transition-all duration-200 active:scale-95",
+      "variants": {
+        "primary": "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md",
+        "secondary": "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        "outline": "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        "ghost": "hover:bg-accent hover:text-accent-foreground"
+      }
+    },
+    "cards": {
+      "style": "rounded-xl border border-border bg-card text-card-foreground shadow-sm hover:shadow-md transition-shadow duration-200",
+      "padding": "p-6"
+    },
+    "inputs": {
+      "style": "rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+    },
+    "badges": {
+      "style": "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+      "match_high": "border-transparent bg-emerald-100 text-emerald-700 hover:bg-emerald-200",
+      "match_medium": "border-transparent bg-yellow-100 text-yellow-700 hover:bg-yellow-200",
+      "match_low": "border-transparent bg-red-100 text-red-700 hover:bg-red-200"
+    }
+  },
+  "images": {
+    "hero": [
+      {
+        "url": "https://images.unsplash.com/photo-1672094272561-3d4e3685a3fa?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwxfHxjb2xsZWdlJTIwc3R1ZGVudCUyMHdvcmtpbmclMjBvbiUyMGxhcHRvcCUyMGNhZmV8ZW58MHx8fHwxNzcxNDM2OTA3fDA&ixlib=rb-4.1.0&q=85",
+        "alt": "Student working on laptop in cafe",
+        "category": "hero_background"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1704770064557-416292d1f4bd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MDV8MHwxfHNlYXJjaHwyfHxjb2xsZWdlJTIwc3R1ZGVudCUyMHdvcmtpbmclMjBvbiUyMGxhcHRvcCUyMGNhZmV8ZW58MHx8fHwxNzcxNDM2OTA3fDA&ixlib=rb-4.1.0&q=85",
+        "alt": "Person using laptop on wooden table",
+        "category": "dashboard_welcome"
+      }
+    ],
+    "placeholders": [
+      {
+        "url": "https://images.pexels.com/photos/1181267/pexels-photo-1181267.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "alt": "Tech creative workspace",
+        "category": "company_thumbnail"
+      },
+      {
+        "url": "https://images.pexels.com/photos/15863044/pexels-photo-15863044.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "alt": "Minimalist tech logo concept",
+        "category": "company_logo_fallback"
+      }
+    ]
+  },
+  "visual_enhancers": {
+    "gradients": {
+      "subtle_blue": "bg-gradient-to-br from-blue-50 to-white",
+      "primary_action": "bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600"
+    },
+    "shadows": {
+      "soft": "shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
+      "card": "shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1),0_2px_4px_-1px_rgba(0,0,0,0.06)]",
+      "float": "shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)]"
+    },
+    "animations": {
+      "hover_lift": "transition-transform duration-200 hover:-translate-y-1",
+      "fade_in": "animate-in fade-in zoom-in duration-300",
+      "slide_up": "animate-in slide-in-from-bottom-4 duration-500"
+    }
+  },
+  "accessibility": {
+    "contrast_check": "Ensure primary text on primary background is white. Ensure muted text is slate-500 or darker.",
+    "focus_states": "focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500",
+    "interactive_elements": "Minimum 44x44px touch target size."
+  },
+  "libraries": {
+    "charts": "recharts",
+    "icons": "lucide-react",
+    "animations": "tailwindcss-animate",
+    "routing": "react-router-dom",
+    "forms": "react-hook-form",
+    "validation": "zod"
+  },
+  "instructions_to_main_agent": [
+    "Install 'framer-motion' if specific complex animations are needed, otherwise use 'tailwindcss-animate'.",
+    "Use 'Manrope' for all headings to give a modern, tech-forward feel.",
+    "Implement the Dashboard using the 'Bento Grid Mode B' strategy: dense, data-rich, but with breathing room.",
+    "The 'Match Score' badge is a critical UI element. Make it distinct using the color coding defined in 'badges'.",
+    "For the Sidebar, ensure it collapses on mobile and uses a sheet/drawer component.",
+    "Authentication pages should be clean, centered, and trust-inspiring (use the 'subtle_blue' gradient background).",
+    "Internship cards should highlight: Role, Company, Location, Match Score, and a 'Quick Apply' button.",
+    "Use 'sonner' for all toast notifications (success/error states).",
+    "Ensure all interactive elements have 'data-testid' attributes for testing."
+  ],
+  "UNIVERSAL_GUIDELINES": [
+    "Avoid generic 'AI slop' designs. No center-aligned text heavy layouts.",
+    "Use 2-3x more padding than standard Tailwind defaults for a 'premium' feel.",
+    "Every interaction needs a micro-state (hover, active, focus).",
+    "Do not use dark gradients. Use subtle, light, airy gradients for backgrounds.",
+    "Use 'lucide-react' for icons. Do not use emojis in UI.",
+    "Components must use named exports.",
+    "Pages must use default exports."
+  ]
+}

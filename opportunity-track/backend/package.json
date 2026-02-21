@@ -1,0 +1,20 @@
+{
+    "name": "opportuneai-scrapers",
+    "version": "1.0.0",
+    "description": "JS scrapers for OpportuneAI",
+    "private": true,
+    "scripts": {
+        "internshala": "node scrapers/Internshala_scraper.js",
+        "pminternship": "node scrapers/run_pminternship.js",
+        "linkedin": "node scrapers/run_linkedin.js",
+        "indeed": "node scrapers/run_indeed.js",
+        "workindia": "node scrapers/run_workindia.js"
+    },
+    "dependencies": {
+        "axios": "^1.13.5",
+        "cheerio": "^1.0.0",
+        "cloudscraper": "^4.6.0",
+        "puppeteer": "^22.0.0",
+        "request": "^2.88.2"
+    }
+}
