@@ -91,6 +91,43 @@ async def _fetch_remotive() -> list[dict]:
         return []
 
 
+
+# ── Data & AI auto-tagging ────────────────────────────────────────────────────
+
+_TAG_RULES = [
+    ("Data",      ["data scientist","data analyst","data engineer","analytics","business intelligence",
+                   "bi analyst","data analysis","data science","data architect","big data","data platform",
+                   "data visualization","power bi","tableau","data engineering"]),
+    ("AI",        ["artificial intelligence","ai engineer","ai researcher","ai developer","generative ai",
+                   "llm","prompt engineer","ai agent","deep learning","computer vision",
+                   "natural language processing","nlp"]),
+    ("ML",        ["machine learning","ml engineer","mlops","ml ops","scikit-learn","tensorflow",
+                   "pytorch","spark","hadoop","pandas","numpy","reinforcement learning"]),
+    ("Analytics", ["analytics","business analyst","business intelligence","bi analyst","tableau",
+                   "power bi","quantitative analyst","quant","statistician","data visualization"]),
+    ("Python",    ["python","pandas","numpy","scikit-learn","tensorflow","pytorch","flask","django","fastapi"]),
+    ("SQL",       ["sql","postgresql","mysql","postgres","mongodb","nosql"]),
+]
+
+def _tag_job(job: dict) -> dict:
+    """Add domain tags (Data/AI/ML/Analytics/Python/SQL) when keywords match."""
+    combined = " ".join([
+        job.get("title", ""),
+        job.get("description", ""),
+        " ".join(job.get("tags", [])),
+    ]).lower()
+
+    existing = set(t.lower() for t in job.get("tags", []))
+    new_tags = list(job.get("tags", []))
+
+    for tag, keywords in _TAG_RULES:
+        if tag.lower() not in existing:
+            if any(kw in combined for kw in keywords):
+                new_tags.append(tag)
+                existing.add(tag.lower())
+
+    return {**job, "tags": new_tags}
+
 # ── JS scraper helpers ───────────────────────────────────────────────────────
 
 _SCRAPERS = [
@@ -109,7 +146,7 @@ async def _run_scraper_async(script: str, source: str, timeout: int) -> list[dic
     return [normalise_scraper_item(item, source) for item in raw]
 
 
-# ── Deduplication ────────────────────────────────────────────────────────────
+# ── Deduplication ────────────────────────────────────────────
 
 def _dedup(jobs: list[dict]) -> list[dict]:
     """Deduplicate by (title.lower() + company.lower()), preserving order."""
@@ -122,45 +159,81 @@ def _dedup(jobs: list[dict]) -> list[dict]:
             unique.append(j)
     return unique
 
+# ── Fast API-only fetch (< 3 seconds) ───────────────────────────────────────
+
+async def _fetch_api_sources_only(page: int = 1) -> dict:
+    """Fetch only Arbeitnow + Remotive (fast, reliable, no subprocess)."""
+    tasks = [
+        ("__arbeitnow", _fetch_arbeitnow(page)),
+        ("__remotive",  _fetch_remotive()),
+    ]
+    gathered = await asyncio.gather(*[c for _, c in tasks], return_exceptions=True)
+
+    results: list[dict] = []
+    source_summary: dict = {}
+    has_next = False
+
+    for (name, _), outcome in zip(tasks, gathered):
+        if isinstance(outcome, Exception):
+            logger.error(f"API source '{name}' error: {outcome}")
+            continue
+        if name == "__arbeitnow":
+            jobs, hn = outcome
+            results.extend(jobs)
+            has_next = hn
+            source_summary["Arbeitnow"] = {"count": len(jobs), "status": "ok"}
+        else:
+            results.extend(outcome)
+            source_summary["Remotive"] = {"count": len(outcome), "status": "ok"}
+
+    results = [_tag_job(j) for j in results]
+    return {"results": _dedup(results), "total": len(results), "has_next": has_next, "sources": source_summary}
+
 
 # ── Main public API ──────────────────────────────────────────────────────────
 
 async def get_all_opportunities(
     page: int = 1,
     sources: Optional[list[str]] = None,
+    fast: bool = True,
 ) -> dict:
     """
-    Run JS scrapers concurrently with Arbeitnow + Remotive, merge, deduplicate.
+    Aggregate opportunities.
 
-    :param page:    Page number passed to Arbeitnow (scrapers always return full set).
-    :param sources: Optional filter list (e.g. ["internshala", "arbeitnow"]).
-                    None = all sources.
-    :returns: {results, total, has_next, sources}
+    If fast=True (default): fetch only Arbeitnow + Remotive with an 8-second
+    hard timeout. Returns instantly with real data.
+
+    If fast=False: also run JS scrapers concurrently. Falls back to fast path
+    if the whole operation takes longer than 90 seconds.
     """
-    enabled = set(s.lower() for s in sources) if sources else None
+    if fast:
+        try:
+            return await asyncio.wait_for(_fetch_api_sources_only(page), timeout=8.0)
+        except asyncio.TimeoutError:
+            logger.error("Fast API fetch timed out — returning empty")
+            return {"results": [], "total": 0, "has_next": False, "sources": {}}
 
+    enabled = set(s.lower() for s in sources) if sources else None
     def _want(name: str) -> bool:
         return enabled is None or name.lower() in enabled
 
-    # Launch everything concurrently
     tasks: list = []
-
-    # API sources
     if _want("arbeitnow"):
         tasks.append(("__arbeitnow", _fetch_arbeitnow(page)))
     if _want("remotive") and page == 1:
         tasks.append(("__remotive", _fetch_remotive()))
-
-    # JS scrapers
     for script, source, timeout in _SCRAPERS:
         if _want(source):
             tasks.append((source, _run_scraper_async(script, source, timeout)))
 
-    # Await all
-    gathered = await asyncio.gather(
-        *[coro for (_, coro) in tasks],
-        return_exceptions=True,
-    )
+    try:
+        gathered = await asyncio.wait_for(
+            asyncio.gather(*[coro for (_, coro) in tasks], return_exceptions=True),
+            timeout=90.0,
+        )
+    except asyncio.TimeoutError:
+        logger.error("Full scraper aggregation timed out — falling back to API only")
+        return await _fetch_api_sources_only(page)
 
     results: list[dict] = []
     source_summary: dict = {}
@@ -171,7 +244,6 @@ async def get_all_opportunities(
             logger.error(f"Source '{name}' raised: {outcome}")
             source_summary[name] = {"count": 0, "status": "error"}
             continue
-
         if name == "__arbeitnow":
             jobs, hn = outcome
             results.extend(jobs)
@@ -185,10 +257,4 @@ async def get_all_opportunities(
             source_summary[name] = {"count": len(outcome), "status": "ok"}
 
     results = _dedup(results)
-
-    return {
-        "results":  results,
-        "total":    len(results),
-        "has_next": has_next,
-        "sources":  source_summary,
-    }
+    return {"results": results, "total": len(results), "has_next": has_next, "sources": source_summary}

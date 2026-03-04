@@ -192,18 +192,55 @@ async def update_profile(data: ProfileUpdate, user=Depends(get_current_user)):
 
 # ==================== COMPATIBILITY SCORING & COURSES ====================
 
+# ── Data & AI keyword taxonomy ──────────────────────────────────────────────
+DATA_AI_KEYWORDS = [
+    # Core data roles
+    "data scientist", "data analyst", "data engineer", "analytics engineer",
+    "business analyst", "business intelligence", "bi analyst",
+    # Machine Learning
+    "machine learning", "ml engineer", "mlops", "ml ops",
+    # AI
+    "ai engineer", "artificial intelligence", "ai researcher", "ai developer",
+    # Deep learning & specializations
+    "deep learning", "computer vision", "nlp engineer", "natural language processing",
+    # Modern AI
+    "generative ai", "llm engineer", "prompt engineer", "ai agent",
+    # Data infrastructure
+    "data architect", "big data", "data platform",
+    # Tools & frameworks
+    "tensorflow", "pytorch", "scikit-learn", "spark", "hadoop",
+    "pandas", "numpy", "power bi", "tableau", "data visualization",
+    # Stats
+    "statistician", "quantitative analyst", "quant researcher",
+    # DB
+    "sql", "nosql", "postgres", "mongodb",
+]
+
+# Domain tag mapping: if any of these sub-keywords match, add the tag
+_TAG_RULES = [
+    ("Data",      ["data scientist","data analyst","data engineer","analytics engineer","business intelligence","bi analyst","data analysis","data science","data architect","big data","data platform","data visualization","power bi","tableau"]),
+    ("AI",        ["artificial intelligence","ai engineer","ai researcher","ai developer","generative ai","llm engineer","prompt engineer","ai agent","deep learning","computer vision","natural language processing","nlp engineer"]),
+    ("ML",        ["machine learning","ml engineer","mlops","ml ops","scikit-learn","tensorflow","pytorch","spark","hadoop","pandas","numpy"]),
+    ("Analytics", ["analytics engineer","business analyst","business intelligence","bi analyst","tableau","power bi","quantitative analyst","quant researcher","statistician","data visualization"]),
+    ("Python",    ["python","pandas","numpy","scikit-learn","tensorflow","pytorch","flask","django","fastapi"]),
+    ("SQL",       ["sql","postgresql","mysql","nosql","postgres","mongodb"]),
+]
+
 COMMON_SKILLS = [
     "python", "javascript", "java", "c++", "c#", "react", "node.js", "angular", "vue",
     "sql", "mongodb", "postgresql", "mysql", "html", "css", "typescript", "docker",
     "kubernetes", "aws", "azure", "gcp", "git", "linux", "rest", "api", "graphql",
     "machine learning", "data analysis", "data science", "deep learning", "nlp",
-    "tensorflow", "pytorch", "pandas", "numpy", "flask", "django", "fastapi",
-    "spring", "figma", "ui/ux", "adobe", "photoshop", "illustrator", "excel",
-    "power bi", "tableau", "sap", "salesforce", "jira", "agile", "scrum",
-    "communication", "teamwork", "problem solving", "leadership", "marketing",
-    "seo", "content writing", "social media", "finance", "accounting",
-    "php", "ruby", "swift", "kotlin", "go", "rust", "scala", "r",
-    "devops", "ci/cd", "testing", "automation", "selenium", "cypress"
+    "tensorflow", "pytorch", "pandas", "numpy", "scikit-learn", "spark", "hadoop",
+    "flask", "django", "fastapi", "spring", "figma", "ui/ux", "adobe",
+    "photoshop", "illustrator", "excel", "power bi", "tableau", "sap",
+    "salesforce", "jira", "agile", "scrum", "communication", "teamwork",
+    "problem solving", "leadership", "marketing", "seo", "content writing",
+    "social media", "finance", "accounting", "php", "ruby", "swift", "kotlin",
+    "go", "rust", "scala", "r", "devops", "ci/cd", "testing", "automation",
+    "selenium", "cypress", "computer vision", "natural language processing",
+    "generative ai", "llm", "big data", "data engineering", "business intelligence",
+    "statistics", "data visualization", "mlops", "reinforcement learning",
 ]
 
 def extract_skills_from_text(text: str) -> List[str]:
@@ -275,6 +312,121 @@ COURSE_DB = {
         {"platform": "Coursera", "name": "Version Control with Git", "url": "https://www.coursera.org/learn/version-control-with-git"},
         {"platform": "GeeksforGeeks", "name": "Git Tutorial", "url": "https://www.geeksforgeeks.org/git-tutorial/"},
         {"platform": "freeCodeCamp", "name": "Git and GitHub Crash Course", "url": "https://www.freecodecamp.org/news/git-and-github-for-beginners/"},
+    ],
+    "data science": [
+        {"platform": "Coursera", "name": "IBM Data Science Professional Certificate", "url": "https://www.coursera.org/professional-certificates/ibm-data-science"},
+        {"platform": "GeeksforGeeks", "name": "Data Science Tutorial", "url": "https://www.geeksforgeeks.org/data-science-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "Data Analysis with Python", "url": "https://www.freecodecamp.org/learn/data-analysis-with-python/"},
+    ],
+    "deep learning": [
+        {"platform": "Coursera", "name": "Deep Learning Specialization by Andrew Ng", "url": "https://www.coursera.org/specializations/deep-learning"},
+        {"platform": "GeeksforGeeks", "name": "Deep Learning Tutorial", "url": "https://www.geeksforgeeks.org/deep-learning-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "Deep Learning Crash Course", "url": "https://www.freecodecamp.org/news/deep-learning-crash-course-learn-the-key-concepts/"},
+    ],
+    "nlp": [
+        {"platform": "Coursera", "name": "Natural Language Processing Specialization", "url": "https://www.coursera.org/specializations/natural-language-processing"},
+        {"platform": "GeeksforGeeks", "name": "NLP Tutorial", "url": "https://www.geeksforgeeks.org/natural-language-processing-nlp-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "NLP with Python", "url": "https://www.freecodecamp.org/news/natural-language-processing-tutorial-with-python-library/"},
+    ],
+    "tensorflow": [
+        {"platform": "Coursera", "name": "DeepLearning.AI TensorFlow Developer", "url": "https://www.coursera.org/professional-certificates/tensorflow-in-practice"},
+        {"platform": "GeeksforGeeks", "name": "TensorFlow Tutorial", "url": "https://www.geeksforgeeks.org/introduction-to-tensorflow/"},
+        {"platform": "freeCodeCamp", "name": "TensorFlow 2.0 Full Course", "url": "https://www.freecodecamp.org/news/massive-tensorflow-2-0-free-course/"},
+    ],
+    "pytorch": [
+        {"platform": "Coursera", "name": "PyTorch Deep Learning", "url": "https://www.coursera.org/search?query=pytorch"},
+        {"platform": "GeeksforGeeks", "name": "PyTorch Tutorial", "url": "https://www.geeksforgeeks.org/getting-started-with-pytorch/"},
+        {"platform": "freeCodeCamp", "name": "PyTorch Full Course", "url": "https://www.freecodecamp.org/news/pytorch-full-course/"},
+    ],
+    "pandas": [
+        {"platform": "Coursera", "name": "Data Analysis with Python & Pandas", "url": "https://www.coursera.org/search?query=pandas+data+analysis"},
+        {"platform": "GeeksforGeeks", "name": "Pandas Tutorial", "url": "https://www.geeksforgeeks.org/pandas-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "Pandas & Python for Data Analysis", "url": "https://www.freecodecamp.org/news/python-pandas-functions/"},
+    ],
+    "numpy": [
+        {"platform": "Coursera", "name": "Applied Data Science with Python", "url": "https://www.coursera.org/specializations/data-science-python"},
+        {"platform": "GeeksforGeeks", "name": "NumPy Tutorial", "url": "https://www.geeksforgeeks.org/numpy-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "NumPy Full Course", "url": "https://www.freecodecamp.org/news/the-ultimate-guide-to-the-numpy-scientific-computing-library-for-python/"},
+    ],
+    "scikit-learn": [
+        {"platform": "Coursera", "name": "Machine Learning with Python", "url": "https://www.coursera.org/learn/machine-learning-with-python"},
+        {"platform": "GeeksforGeeks", "name": "Scikit-Learn Tutorial", "url": "https://www.geeksforgeeks.org/learning-model-building-scikit-learn-python-machine-learning-library/"},
+        {"platform": "freeCodeCamp", "name": "Scikit-Learn Crash Course", "url": "https://www.freecodecamp.org/news/scikit-learn-cheat-sheet-machine-learning-python/"},
+    ],
+    "spark": [
+        {"platform": "Coursera", "name": "Big Data Analysis with Scala and Spark", "url": "https://www.coursera.org/learn/scala-spark-big-data"},
+        {"platform": "GeeksforGeeks", "name": "Apache Spark Tutorial", "url": "https://www.geeksforgeeks.org/apache-spark-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "Apache Spark with Python", "url": "https://www.freecodecamp.org/news/use-pyspark-for-data-processing-and-machine-learning/"},
+    ],
+    "r": [
+        {"platform": "Coursera", "name": "Statistics with R Specialization", "url": "https://www.coursera.org/specializations/statistics"},
+        {"platform": "GeeksforGeeks", "name": "R Programming Tutorial", "url": "https://www.geeksforgeeks.org/r-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "R Programming Full Course", "url": "https://www.freecodecamp.org/news/r-programming-course/"},
+    ],
+    "tableau": [
+        {"platform": "Coursera", "name": "Data Visualization with Tableau", "url": "https://www.coursera.org/specializations/data-visualization"},
+        {"platform": "GeeksforGeeks", "name": "Tableau Tutorial", "url": "https://www.geeksforgeeks.org/tableau-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "Tableau for Beginners", "url": "https://www.freecodecamp.org/news/tableau-for-beginners/"},
+    ],
+    "power bi": [
+        {"platform": "Coursera", "name": "Microsoft Power BI Data Analyst", "url": "https://www.coursera.org/professional-certificates/microsoft-power-bi-data-analyst"},
+        {"platform": "GeeksforGeeks", "name": "Power BI Tutorial", "url": "https://www.geeksforgeeks.org/power-bi-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "Power BI Full Course", "url": "https://www.freecodecamp.org/news/how-to-create-a-dashboard-in-power-bi/"},
+    ],
+    "computer vision": [
+        {"platform": "Coursera", "name": "Convolutional Neural Networks by Andrew Ng", "url": "https://www.coursera.org/learn/convolutional-neural-networks"},
+        {"platform": "GeeksforGeeks", "name": "Computer Vision Tutorial", "url": "https://www.geeksforgeeks.org/computer-vision/"},
+        {"platform": "freeCodeCamp", "name": "Computer Vision with Python", "url": "https://www.freecodecamp.org/news/opencv-full-course/"},
+    ],
+    "generative ai": [
+        {"platform": "Coursera", "name": "Generative AI with LLMs", "url": "https://www.coursera.org/learn/generative-ai-with-llms"},
+        {"platform": "GeeksforGeeks", "name": "Generative AI Tutorial", "url": "https://www.geeksforgeeks.org/generative-ai/"},
+        {"platform": "freeCodeCamp", "name": "Generative AI for Beginners", "url": "https://www.freecodecamp.org/news/generative-ai-handbook/"},
+    ],
+    "llm": [
+        {"platform": "Coursera", "name": "Building LLM Applications", "url": "https://www.coursera.org/search?query=large+language+models"},
+        {"platform": "GeeksforGeeks", "name": "Large Language Models Tutorial", "url": "https://www.geeksforgeeks.org/large-language-model-llm/"},
+        {"platform": "freeCodeCamp", "name": "LangChain Full Course", "url": "https://www.freecodecamp.org/news/langchain-how-to-create-custom-knowledge-chatbots/"},
+    ],
+    "mlops": [
+        {"platform": "Coursera", "name": "Machine Learning Engineering for Production (MLOps)", "url": "https://www.coursera.org/specializations/machine-learning-engineering-for-production-mlops"},
+        {"platform": "GeeksforGeeks", "name": "MLOps Tutorial", "url": "https://www.geeksforgeeks.org/mlops-machine-learning-operations/"},
+        {"platform": "freeCodeCamp", "name": "MLOps Zoomcamp", "url": "https://www.freecodecamp.org/news/mlops-zoomcamp/"},
+    ],
+    "big data": [
+        {"platform": "Coursera", "name": "IBM Big Data Specialization", "url": "https://www.coursera.org/specializations/big-data"},
+        {"platform": "GeeksforGeeks", "name": "Big Data Tutorial", "url": "https://www.geeksforgeeks.org/big-data/"},
+        {"platform": "freeCodeCamp", "name": "Big Data Engineering", "url": "https://www.freecodecamp.org/news/big-data-hadoop-spark-guide/"},
+    ],
+    "business intelligence": [
+        {"platform": "Coursera", "name": "Google Business Intelligence Certificate", "url": "https://www.coursera.org/professional-certificates/google-business-intelligence"},
+        {"platform": "GeeksforGeeks", "name": "Business Intelligence Tutorial", "url": "https://www.geeksforgeeks.org/business-intelligence/"},
+        {"platform": "freeCodeCamp", "name": "BI & Data Warehousing", "url": "https://www.freecodecamp.org/news/data-warehousing-and-business-intelligence/"},
+    ],
+    "statistics": [
+        {"platform": "Coursera", "name": "Statistics with Python Specialization", "url": "https://www.coursera.org/specializations/statistics-with-python"},
+        {"platform": "GeeksforGeeks", "name": "Statistics for Data Science", "url": "https://www.geeksforgeeks.org/statistics-for-data-science/"},
+        {"platform": "freeCodeCamp", "name": "Statistics for Beginners", "url": "https://www.freecodecamp.org/news/statistics-for-data-science/"},
+    ],
+    "natural language processing": [
+        {"platform": "Coursera", "name": "Natural Language Processing Specialization", "url": "https://www.coursera.org/specializations/natural-language-processing"},
+        {"platform": "GeeksforGeeks", "name": "NLP Tutorial", "url": "https://www.geeksforgeeks.org/natural-language-processing-nlp-tutorial/"},
+        {"platform": "freeCodeCamp", "name": "NLP Projects with Python", "url": "https://www.freecodecamp.org/news/natural-language-processing-tutorial-with-python-library/"},
+    ],
+    "reinforcement learning": [
+        {"platform": "Coursera", "name": "Reinforcement Learning Specialization", "url": "https://www.coursera.org/specializations/reinforcement-learning"},
+        {"platform": "GeeksforGeeks", "name": "Reinforcement Learning Tutorial", "url": "https://www.geeksforgeeks.org/what-is-reinforcement-learning/"},
+        {"platform": "freeCodeCamp", "name": "Deep Reinforcement Learning Course", "url": "https://www.freecodecamp.org/news/an-introduction-to-deep-reinforcement-learning/"},
+    ],
+    "data engineering": [
+        {"platform": "Coursera", "name": "IBM Data Engineering Professional Certificate", "url": "https://www.coursera.org/professional-certificates/ibm-data-engineer"},
+        {"platform": "GeeksforGeeks", "name": "Data Engineering Tutorial", "url": "https://www.geeksforgeeks.org/data-engineering/"},
+        {"platform": "freeCodeCamp", "name": "Data Engineering Full Course", "url": "https://www.freecodecamp.org/news/data-engineering-course-for-beginners/"},
+    ],
+    "data visualization": [
+        {"platform": "Coursera", "name": "Data Visualization with Python", "url": "https://www.coursera.org/learn/python-for-data-visualization"},
+        {"platform": "GeeksforGeeks", "name": "Data Visualization Tutorial", "url": "https://www.geeksforgeeks.org/data-visualization-with-python/"},
+        {"platform": "freeCodeCamp", "name": "Data Visualization Certification", "url": "https://www.freecodecamp.org/learn/data-visualization/"},
     ],
 }
 

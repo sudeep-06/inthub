@@ -11,8 +11,8 @@ import {
 
 const navItems = [
   { to: '/profile', label: 'Profile', icon: User },
-  { to: '/feed', label: 'Feed', icon: Newspaper },
-  { to: '/internships', label: 'Listings', icon: Search },
+  { to: '/feed', label: 'Opportunities', icon: Newspaper },
+  { to: '/internships', label: 'Openings', icon: Search },
   { to: '/bookmarks', label: 'Bookmarks', icon: Bookmark },
 ];
 

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 
 const statCards = [
-  { key: 'total_applications', label: 'Total Applied', icon: FileText, gradient: 'from-blue-500 to-blue-600' },
+  { key: 'total_applications', label: 'Total Applied', icon: FileText, gradient: 'from-orange-500 to-orange-600' },
   { key: 'applied', label: 'Pending', icon: Clock, gradient: 'from-amber-400 to-amber-500' },
   { key: 'interviewing', label: 'Interviewing', icon: TrendingUp, gradient: 'from-violet-500 to-violet-600' },
   { key: 'accepted', label: 'Accepted', icon: CheckCircle2, gradient: 'from-emerald-500 to-emerald-600' },

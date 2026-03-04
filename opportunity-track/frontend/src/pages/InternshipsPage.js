@@ -18,6 +18,8 @@ import {
 import { SKILLS } from '@/data/skills';
 import { ROLES } from '@/data/roles';
 import { LOCATIONS } from '@/data/locations';
+import { ds } from '@/styles/design-system';
+import { SkeletonGrid } from '@/components/ui/SkeletonCard';
 
 // Combined search suggestions: roles + skills + locations
 const SEARCH_SUGGESTIONS = [
@@ -139,8 +141,45 @@ export default function InternshipsPage() {
   return (
     <div className="page-container" data-testid="internships-page">
       <div className="mb-6">
-        <h1 className="page-title">Internship Listings</h1>
+        <h1 className="page-title">Openings</h1>
         <p className="page-subtitle">Discover real-time opportunities matched to your skills</p>
+      </div>
+
+      {/* Quick-filter chips — Data & AI ecosystem */}
+      <div className="flex flex-wrap gap-2 mb-4" data-testid="quick-filters">
+        {[
+          { label: '🤖 AI / ML', term: 'machine learning' },
+          { label: '📊 Data Science', term: 'data scientist' },
+          { label: '📈 Analytics', term: 'data analyst' },
+          { label: '🧠 Deep Learning', term: 'deep learning' },
+          { label: '💬 NLP / LLM', term: 'natural language processing' },
+          { label: '👁️ Computer Vision', term: 'computer vision' },
+          { label: '✨ Generative AI', term: 'generative ai' },
+          { label: '🗄️ Data Engineering', term: 'data engineer' },
+          { label: '🐍 Python', term: 'python' },
+          { label: '🗃️ SQL', term: 'sql' },
+        ].map(({ label, term }) => (
+          <button
+            key={term}
+            onClick={() => { setSearchInput(term); setSearch(term); setPage(1); }}
+            className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-150 ${search === term
+                ? 'bg-orange-500 text-white border-orange-500 shadow-sm'
+                : 'bg-white dark:bg-secondary text-muted-foreground border-border hover:border-orange-400 hover:text-orange-500'
+              }`}
+            data-testid={`chip-${term.replace(/\s+/g, '-')}`}
+          >
+            {label}
+          </button>
+        ))}
+        {search && (
+          <button
+            onClick={() => { setSearchInput(''); setSearch(''); setPage(1); }}
+            className="px-3 py-1 rounded-full text-xs font-medium bg-secondary text-muted-foreground border border-border hover:bg-red-50 hover:text-red-500 hover:border-red-300 transition-all duration-150"
+            data-testid="chip-clear"
+          >
+            ✕ Clear
+          </button>
+        )}
       </div>
 
       {/* Filters */}
@@ -158,7 +197,14 @@ export default function InternshipsPage() {
               icon={<Search className="w-4 h-4" />}
             />
           </div>
-          <Button type="submit" data-testid="search-btn" className="shrink-0">Search</Button>
+          <Button
+            type="submit"
+            data-testid="search-btn"
+            className={`shrink-0 ${ds.tw.primaryBtn}`}
+            style={{ borderRadius: ds.radius.button }}
+          >
+            Search
+          </Button>
         </form>
         {/* Location filter */}
         <div className="w-full sm:w-52">
@@ -207,9 +253,7 @@ export default function InternshipsPage() {
 
       {/* Results */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        </div>
+        <SkeletonGrid count={6} variant="internship" />
       ) : internships.length === 0 ? (
         <div className="text-center py-20" data-testid="no-results">
           <AlertTriangle className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-40" />
@@ -219,10 +263,11 @@ export default function InternshipsPage() {
         <>
           <p className="text-sm text-muted-foreground mb-4">{internships.length} results on page {page}</p>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" data-testid="internships-grid">
-            {internships.map(intern => (
+            {internships.map((intern, idx) => (
               <InternshipCard
                 key={intern.internship_id}
                 internship={intern}
+                index={idx}
                 isBookmarked={bookmarkedIds.has(intern.internship_id)}
                 isApplied={appliedIds.has(intern.internship_id)}
                 onBookmark={handleBookmark}
