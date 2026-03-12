@@ -37,6 +37,11 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
 app = FastAPI()
+
+@app.get("/")
+async def root():
+    return {"status": "Backend is running!", "message": "Access /docs for API documentation or use the frontend at port 3000"}
+
 api_router = APIRouter(prefix="/api")
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
